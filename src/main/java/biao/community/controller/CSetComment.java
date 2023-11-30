@@ -3,8 +3,9 @@ package biao.community.controller;
 import biao.community.dao.Examine;
 import biao.community.information.Information;
 import biao.community.information.port2_5.CommentInformation;
-import biao.community.information.port3_4.Result;
 import biao.community.information.port3_4.JsonValue;
+import biao.community.information.port3_4.Result;
+import biao.community.sensitive.SensitiveWordFilter;
 import biao.community.service.SSetComment;
 import biao.community.tool.DESUtils;
 import biao.community.tool.MD5;
@@ -19,6 +20,10 @@ public class CSetComment {
 
     @Autowired
     SSetComment sSetComment;
+
+    @Autowired
+    SensitiveWordFilter sensitiveWordFilter;
+
 
     @Autowired
     Examine examine;
@@ -62,7 +67,7 @@ public class CSetComment {
             result.setBtc_id(commentInformation.getBtc_id());
             result.setU_id(commentInformation.getU_id());
             result.setU_id0(commentInformation.getU_id0());
-            result.setBtc_com(commentInformation.getBtc_com());
+            result.setBtc_com(sensitiveWordFilter.replaceSensitiveWord(commentInformation.getBtc_com(),2,"*"));
             sSetComment.setComment(commentInformation.getMain_comment(), result);
         }else{
             result.setCode(0);
@@ -105,7 +110,7 @@ public class CSetComment {
 
         if(result.getErrorMessage().equals("success")){
             result.setErrorMessage("success");
-            result.setGc_com(jsonValueClass.getGc_com());
+            result.setGc_com(sensitiveWordFilter.replaceSensitiveWord(jsonValueClass.getGc_com(),2,"*"));
             result.setU_id(jsonValueClass.getU_id());
             result.setU_id0(jsonValueClass.getU_id0());
             result.setG_id(jsonValueClass.getG_id());
